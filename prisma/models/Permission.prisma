@@ -1,0 +1,12 @@
+// Permission model
+model Permission {
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+
+  // Relations
+  rolePermissions RolePermission[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+}

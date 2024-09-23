@@ -1,0 +1,16 @@
+// UserPlaylist model (join table for users and playlists)
+model UserPlaylist {
+  id        Int   @id @default(autoincrement())
+
+  // Foreign keys
+  userId    Int
+  playlistId Int
+
+  // Relations
+  user      User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  playlist  Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
+}

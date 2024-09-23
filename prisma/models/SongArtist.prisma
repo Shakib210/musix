@@ -1,0 +1,16 @@
+// SongArtist model (join table for songs and artists)
+model SongArtist {
+  id        Int   @id @default(autoincrement())
+
+  // Foreign keys
+  songId    Int
+  artistId  Int
+
+  // Relations
+  song      Song  @relation(fields: [songId], references: [id], onDelete: Cascade)
+  artist    Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
+}

@@ -1,0 +1,19 @@
+// Song model
+model Song {
+  id                Int              @id @default(autoincrement())
+  name              String
+  url               String?
+  imagePath         String?
+  videoLink         String?
+
+  // Relations
+  songArtists       SongArtist[]
+  songAlbums        SongAlbum[]
+  songPlaylists     SongPlaylist[]
+  songGenres        SongGenre[]
+  userSongHistories UserSongHistory[]
+
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  deletedAt         DateTime?
+}

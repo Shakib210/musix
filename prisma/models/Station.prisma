@@ -1,0 +1,16 @@
+// Station model
+model Station {
+  id            Int      @id @default(autoincrement())
+  rsName        String   @unique
+  rsFrequency   String   @unique
+  rsUrl         String   @unique
+  rsImageUrl    String?
+  description   String?
+  like          Int      @default(0)
+  favorite      Int      @default(0)
+  frequencyName String?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+}

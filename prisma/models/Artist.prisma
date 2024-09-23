@@ -1,0 +1,17 @@
+// Artist model
+model Artist {
+  id         Int      @id @default(autoincrement())
+  name       String
+  stageName  String
+  imagePath  String?
+  bio        String?
+  dob        DateTime?
+
+  // Relations
+  artistAlbums  ArtistAlbum[]
+  songArtists   SongArtist[]
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
+}

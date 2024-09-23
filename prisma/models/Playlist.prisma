@@ -1,0 +1,17 @@
+// Playlist model
+model Playlist {
+  id               Int               @id @default(autoincrement())
+  name             String
+  songCount        Int               @default(0)
+  totalSongsDuration Int             @default(0)
+  isActive         Boolean           @default(true)
+  isCustom         Boolean           @default(false)
+
+  // Relations
+  userPlaylists    UserPlaylist[]
+  songPlaylists    SongPlaylist[]
+
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  deletedAt        DateTime?
+}

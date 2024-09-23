@@ -1,0 +1,296 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+// Album model
+model Album {
+  id             Int          @id @default(autoincrement())
+  name           String
+  imagePath      String?
+  releaseYear    DateTime
+  numberOfSongs  Int          @default(0)
+
+  // Relations
+  songAlbums    SongAlbum[]
+  artistAlbums  ArtistAlbum[]
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  deletedAt     DateTime?
+}// Artist model
+model Artist {
+  id         Int      @id @default(autoincrement())
+  name       String
+  stageName  String
+  imagePath  String?
+  bio        String?
+  dob        DateTime?
+
+  // Relations
+  artistAlbums  ArtistAlbum[]
+  songArtists   SongArtist[]
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
+}// ArtistAlbum model (join table for artists and albums)
+model ArtistAlbum {
+  id        Int   @id @default(autoincrement())
+
+  // Foreign keys
+  artistId  Int
+  albumId   Int
+
+  // Relations
+  artist    Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  album     Album @relation(fields: [albumId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
+}// Genre Model
+model Genre {
+  id        Int         @id @default(autoincrement())
+  name      String
+  
+  // Relations
+  songGenres SongGenre[]
+}// Permission model
+model Permission {
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+
+  // Relations
+  rolePermissions RolePermission[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+}// Playlist model
+model Playlist {
+  id               Int               @id @default(autoincrement())
+  name             String
+  songCount        Int               @default(0)
+  totalSongsDuration Int             @default(0)
+  isActive         Boolean           @default(true)
+  isCustom         Boolean           @default(false)
+
+  // Relations
+  userPlaylists    UserPlaylist[]
+  songPlaylists    SongPlaylist[]
+
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  deletedAt        DateTime?
+}// Role model
+model Role {
+  id        Int    @id @default(autoincrement())
+  name      String @unique
+
+  // Relations
+  userRoles UserRole[]
+  rolePermissions RolePermission[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+}// RolePermission model (join table for roles and permissions)
+model RolePermission {
+  id           Int    @id @default(autoincrement())
+
+  // Foreign keys
+  roleId       Int
+  permissionId Int
+
+  // Relations
+  role         Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  deletedAt    DateTime?
+}// Song model
+model Song {
+  id                Int              @id @default(autoincrement())
+  name              String
+  url               String?
+  imagePath         String?
+  videoLink         String?
+
+  // Relations
+  songArtists       SongArtist[]
+  songAlbums        SongAlbum[]
+  songPlaylists     SongPlaylist[]
+  songGenres        SongGenre[]
+  userSongHistories UserSongHistory[]
+
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  deletedAt         DateTime?
+}// SongAlbum model (join table for songs and albums)
+model SongAlbum {
+  id        Int   @id @default(autoincrement())
+
+  // Foreign keys
+  songId    Int
+  albumId   Int
+
+  // Relations
+  song      Song  @relation(fields: [songId], references: [id], onDelete: Cascade)
+  album     Album @relation(fields: [albumId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
+}// SongArtist model (join table for songs and artists)
+model SongArtist {
+  id        Int   @id @default(autoincrement())
+
+  // Foreign keys
+  songId    Int
+  artistId  Int
+
+  // Relations
+  song      Song  @relation(fields: [songId], references: [id], onDelete: Cascade)
+  artist    Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
+}// SongGenre Model (Many-to-Many between Song and Genre)
+model SongGenre {
+  id      Int  @id @default(autoincrement())
+  songId  Int
+  genreId Int
+  
+  // Relations
+  song  Song  @relation(fields: [songId], references: [id], onDelete: Cascade)
+  genre Genre @relation(fields: [genreId], references: [id], onDelete: Cascade)
+  
+  @@unique([songId, genreId])
+}// SongPlaylist model (join table for songs and playlists)
+model SongPlaylist {
+  id        Int   @id @default(autoincrement())
+
+  // Foreign keys
+  songId    Int
+  playlistId Int
+
+  // Relations
+  song      Song  @relation(fields: [songId], references: [id], onDelete: Cascade)
+  playlist  Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
+}// Station model
+model Station {
+  id            Int      @id @default(autoincrement())
+  rsName        String   @unique
+  rsFrequency   String   @unique
+  rsUrl         String   @unique
+  rsImageUrl    String?
+  description   String?
+  like          Int      @default(0)
+  favorite      Int      @default(0)
+  frequencyName String?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+}// User model
+model User {
+  id                     Int                     @id @default(autoincrement())
+  userAccount            String                  @unique
+  email                  String                  @unique
+  firstName              String
+  lastName               String
+  gender                 String?
+  dateOfBirth            DateTime
+  enablePushNotification Boolean?
+  verificationCode       BigInt?
+  phoneNumber            String?
+  dateOfSignup           DateTime                @default(now())
+  premiumUser            Boolean?
+  tempPw                 String?
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  deletedAt              DateTime?               // Soft delete
+
+  // Relations
+  songHistories          UserSongHistory[]
+  userPlaylists          UserPlaylist[]
+  userRoles              UserRole[]
+  likesFavorites         UserLikesFavorites[]
+
+  @@index([email], map: "idx_user_email") // Index for faster lookup
+}// UserLikesFavorites model
+model UserLikesFavorites {
+  id         Int     @id @default(autoincrement())
+  isLiked    Boolean  @default(true)
+  isFavorite Boolean  @default(true)
+  isFollowed Boolean  @default(true)
+  tableName  String
+  fieldId    Int
+
+  // Foreign keys
+  userId     Int
+
+  // Relations
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
+}// UserPlaylist model (join table for users and playlists)
+model UserPlaylist {
+  id        Int   @id @default(autoincrement())
+
+  // Foreign keys
+  userId    Int
+  playlistId Int
+
+  // Relations
+  user      User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  playlist  Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
+}// UserRole model (join table for users and roles)
+model UserRole {
+  id        Int     @id @default(autoincrement())
+
+  // Foreign keys
+  userId    Int
+  roleId    Int
+
+  // Relations
+  user      User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      Role  @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+}// UserSongHistory model
+model UserSongHistory {
+  id             Int       @id @default(autoincrement())
+  playedMinutes  String    @default("0")
+  date           DateTime  @default(now())
+
+  // Foreign keys
+  songId         Int
+  userId         Int
+
+  // Relations
+  song           Song      @relation(fields: [songId], references: [id], onDelete: Cascade)
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+}

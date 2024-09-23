@@ -1,0 +1,19 @@
+// UserLikesFavorites model
+model UserLikesFavorites {
+  id         Int     @id @default(autoincrement())
+  isLiked    Boolean  @default(true)
+  isFavorite Boolean  @default(true)
+  isFollowed Boolean  @default(true)
+  tableName  String
+  fieldId    Int
+
+  // Foreign keys
+  userId     Int
+
+  // Relations
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
+}

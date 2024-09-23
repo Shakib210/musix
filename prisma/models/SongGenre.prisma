@@ -1,0 +1,12 @@
+// SongGenre Model (Many-to-Many between Song and Genre)
+model SongGenre {
+  id      Int  @id @default(autoincrement())
+  songId  Int
+  genreId Int
+  
+  // Relations
+  song  Song  @relation(fields: [songId], references: [id], onDelete: Cascade)
+  genre Genre @relation(fields: [genreId], references: [id], onDelete: Cascade)
+  
+  @@unique([songId, genreId])
+}

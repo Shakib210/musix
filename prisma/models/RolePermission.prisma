@@ -1,0 +1,16 @@
+// RolePermission model (join table for roles and permissions)
+model RolePermission {
+  id           Int    @id @default(autoincrement())
+
+  // Foreign keys
+  roleId       Int
+  permissionId Int
+
+  // Relations
+  role         Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  deletedAt    DateTime?
+}
