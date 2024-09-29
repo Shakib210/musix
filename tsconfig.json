@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "CommonJS",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "./dist",
+    "baseUrl": "./src",
+    "paths": {
+      "@config/*": ["config/*"],
+      "@controllers/*": ["controllers/*"],
+      "@routes/*": ["routes/*"],
+      "@services/*": ["services/*"],
+      "@middlewares/*": ["middlewares/*"]
+    }
+  },
+  "include": ["src/**/*", "server.ts"],
+  "exclude": ["node_modules"]
+}
