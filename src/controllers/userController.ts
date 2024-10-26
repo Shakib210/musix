@@ -1,60 +1,39 @@
-import { Request, Response, NextFunction } from "express";
-import { prisma } from "@config/db"; // Adjust the path to your Prisma client
-import AppError from "@middlewares/AppError"; // Import the custom error class
-
-export const getAllUsers = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  try {
-    const users = await prisma.user.findMany();
-
-    if (!users.length) {
-      return next(new AppError("No users found", 404)); // Specific error if no users
-    }
-
-    res.status(200).json(users);
-  } catch (error) {
-    next(new AppError("Error fetching users", 500)); // Catch any other errors
-  }
-};
+import { Request, Response } from "express";
+import {
+  isUserExitService,
+  createUserService,
+  getUsersService,
+} from "../services/userService";
+import asyncHandler from "../utils/async.js";
+import { NotFound } from "../utils/error.js";
 
 /**
  *
  * @param req
  * @param res
+ * @param next
  */
-export const createUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  try {
-    const {
-      userAccount,
-      email,
-      firstName,
-      lastName,
-      gender,
-      dateOfBirth,
-      phoneNumber,
-    } = req.body;
+export const createUser = asyncHandler(async (req: Request, res: Response) => {
+  const payload = req.body;
 
-    const newUser = await prisma.user.create({
-      data: {
-        userAccount,
-        email,
-        firstName,
-        lastName,
-        gender,
-        dateOfBirth: new Date(dateOfBirth),
-        phoneNumber,
-      },
-    });
+  const isUserExist = await isUserExitService(payload);
 
-    res.status(201).json(newUser);
-  } catch (error) {
-    next(new AppError("Failed to create user", 500)); // Use AppError to throw a specific error
-  }
-};
+  console.log(isUserExist);
+  if (isUserExist.length) throw new NotFound("User already exists!");
+
+  const newUser = await createUserService(payload);
+
+  return res
+    .status(201)
+    .json({ success: true, data: newUser, msg: "User create successfully!" });
+});
+
+export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
+  const allUsers = await getUsersService();
+
+  if (!allUsers) throw new NotFound("Users not found");
+
+  return res
+    .status(201)
+    .json({ success: true, allUsers, msg: "Users fetch successfully!" });
+});

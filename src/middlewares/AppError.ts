@@ -1,18 +1,16 @@
-// src/middlewares/AppError.ts
-
 class AppError extends Error {
-    statusCode: number;
-    isOperational: boolean;
-  
-    constructor(message: string, statusCode: number) {
-      super(message);
-      this.statusCode = statusCode;
-      this.isOperational = true; // Indicates that this error is operational
-  
-      // Capture the stack trace
-      Error.captureStackTrace(this, this.constructor);
-    }
+  statusCode: number;
+  isOperational: boolean;
+  originalError?: Error;
+
+  constructor(message: string, statusCode: number, originalError?: Error) {
+    super(message);
+    this.statusCode = statusCode;
+    this.isOperational = true;
+    this.originalError = originalError;
+
+    Error.captureStackTrace(this, this.constructor);
   }
-  
-  export default AppError;
-  
+}
+
+export default AppError;

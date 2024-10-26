@@ -4,7 +4,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "generate-schema": "bash concat-schema.sh && npx prisma generate &&  npx prisma migrate dev --name optimize_all_models"
+    "generate-schema": "bash concat-schema.sh && npx prisma generate &&  npx prisma migrate dev --name optimize_all_models",
+    "build": "npx tsc",
+    "start": "node dist/server.js",
+    "dev": "nodemon --watch \"src/**/*.ts\" --exec \"tsc && node dist/server.js\""
   },
   "keywords": [],
   "author": "",
@@ -16,13 +19,14 @@
     "@types/node": "^22.7.4",
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
+    "joi": "^17.13.3",
     "nodemon": "^3.1.7",
     "pg": "^8.13.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.2"
   },
   "devDependencies": {
-    "prisma": "^5.20.0",
+    "prisma": "^5.21.1",
     "tsconfig-paths": "^4.2.0"
   }
 }

@@ -1,24 +1,16 @@
-// src/middlewares/errorHandler.ts
+import { ErrorReport } from "joi";
+import { GeneralError } from "../utils/error.js";
+import { NextFunction, Request, Response } from "express";
 
-import { Request, Response, NextFunction } from 'express';
-import AppError from './AppError'; // Import the custom error class
-
-const errorHandler = (err: any, req: Request, res: Response, next: NextFunction): Response => {
-  console.error('Error:', err); // Log the error for debugging
-
-  if (err instanceof AppError) {
-    // Handle known operational errors
-    return res.status(err.statusCode).json({
-      status: 'error',
-      message: err.message,
-    });
-  }
-
-  // Handle unknown errors
-  return res.status(500).json({
-    status: 'error',
-    message: 'Something went wrong!',
-  });
+const handleError = async (err: ErrorReport, req: Request, res: Response, next: NextFunction) => {
+	if (err instanceof GeneralError) {
+		const code = err.getCode();
+		return res.status(code).json({ name: err.name, msg: err.message, success: false });
+	}
+	return res.status(500).json({
+		name: "internal server error",
+		msg: err.message,
+		success: false,
+	});
 };
-
-export default errorHandler;
+export default handleError;
