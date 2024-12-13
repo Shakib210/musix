@@ -9,6 +9,7 @@ model Station {
   like          Int      @default(0)
   favorite      Int      @default(0)
   frequencyName String?
+  type          String   // e.g., "LIVE_RADIO", "PODCAST"
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

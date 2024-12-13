@@ -1,0 +1,18 @@
+model Payment {
+  id              Int       @id @default(autoincrement())
+  userSubscriptionId Int
+  amount          Float
+  currency        String    @default("USD") // Currency support
+  paymentDate     DateTime  @default(now())
+  paymentMethod   String    // e.g., "Credit Card", "PayPal"
+  status          String    // e.g., "SUCCESS", "FAILED"
+  failureReason   String?   // Optional field for failure details
+  providerDetails String?   // JSON string with third-party details
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  userSubscription UserSubscription @relation(fields: [userSubscriptionId], references: [id])
+
+  @@index([userSubscriptionId])
+}

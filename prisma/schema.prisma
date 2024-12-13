@@ -59,7 +59,35 @@ model Genre {
   
   // Relations
   songGenres SongGenre[]
-}// Permission model
+}model Log {
+  id          Int      @id @default(autoincrement())
+  userId      Int?
+  action      String   // e.g., "LOGIN", "SUBSCRIPTION_CREATED"
+  details     String?  // Optional JSON string with details
+  createdAt   DateTime @default(now())
+
+  // Relations
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+model Payment {
+  id              Int       @id @default(autoincrement())
+  userSubscriptionId Int
+  amount          Float
+  currency        String    @default("USD") // Currency support
+  paymentDate     DateTime  @default(now())
+  paymentMethod   String    // e.g., "Credit Card", "PayPal"
+  status          String    // e.g., "SUCCESS", "FAILED"
+  failureReason   String?   // Optional field for failure details
+  providerDetails String?   // JSON string with third-party details
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  userSubscription UserSubscription @relation(fields: [userSubscriptionId], references: [id])
+
+  @@index([userSubscriptionId])
+}
+// Permission model
 model Permission {
   id          Int    @id @default(autoincrement())
   name        String @unique
@@ -74,11 +102,12 @@ model Permission {
 model Playlist {
   id               Int               @id @default(autoincrement())
   name             String
+  isPrivate        Boolean           @default(false)
   songCount        Int               @default(0)
   totalSongsDuration Int             @default(0)
   isActive         Boolean           @default(true)
   isCustom         Boolean           @default(false)
-
+  
   // Relations
   userPlaylists    UserPlaylist[]
   songPlaylists    SongPlaylist[]
@@ -86,7 +115,42 @@ model Playlist {
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   deletedAt        DateTime?
-}// Role model
+}
+model Promotion {
+  id         Int      @id @default(autoincrement())
+  code       String   @unique
+  discount   Float    // Percentage or flat discount
+  startDate  DateTime
+  endDate    DateTime
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+}
+model RefreshToken {
+  id          Int      @id @default(autoincrement())
+  token       String   @unique
+  userId      Int
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime
+
+  // Relations
+  user        User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+model Review {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  entityType String   // e.g., "SONG", "ALBUM", "ARTIST"
+  entityId   Int      // ID of the related entity
+  rating     Int      // 1 to 5
+  comment    String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  user       User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+// Role model
 model Role {
   id        Int    @id @default(autoincrement())
   name      String @unique
@@ -198,15 +262,30 @@ model Station {
   like          Int      @default(0)
   favorite      Int      @default(0)
   frequencyName String?
+  type          String   // e.g., "LIVE_RADIO", "PODCAST"
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   deletedAt     DateTime?
-}// User model
+}
+model SubscriptionPlan {
+  id             Int       @id @default(autoincrement())
+  name           String    @unique
+  description    String?
+  price          Float     // Monthly subscription price
+  durationMonths Int       // Duration in months
+  isRecurring    Boolean   @default(true) // Recurring or one-time
+  trialDays      Int?      // Optional trial period
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relations
+  userSubscriptions UserSubscription[]
+}
 model User {
-  id                     Int                     @id @default(autoincrement())
-  userAccount            String                  @unique
-  email                  String                  @unique
+  id                     Int       @id @default(autoincrement())
+  userAccount            String    @unique
+  email                  String    @unique
   firstName              String
   lastName               String
   gender                 String?
@@ -214,21 +293,26 @@ model User {
   enablePushNotification Boolean?
   verificationCode       BigInt?
   phoneNumber            String?
-  dateOfSignup           DateTime                @default(now())
+  dateOfSignup           DateTime  @default(now())
   premiumUser            Boolean?
   tempPw                 String?
-  createdAt              DateTime                @default(now())
-  updatedAt              DateTime                @updatedAt
-  deletedAt              DateTime?               // Soft delete
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  deletedAt              DateTime? // Soft delete
 
   // Relations
-  songHistories          UserSongHistory[]
-  userPlaylists          UserPlaylist[]
-  userRoles              UserRole[]
-  likesFavorites         UserLikesFavorites[]
+  songHistories     UserSongHistory[]
+  userPlaylists     UserPlaylist[]
+  userRoles         UserRole[]
+  likesFavorites    UserLikesFavorites[]
+  userSubscriptions UserSubscription[]
+  tokens            RefreshToken[]
+  logs              Log[]
+  reviews           Review[]
 
   @@index([email], map: "idx_user_email") // Index for faster lookup
-}// UserLikesFavorites model
+}
+// UserLikesFavorites model
 model UserLikesFavorites {
   id         Int     @id @default(autoincrement())
   isLiked    Boolean  @default(true)
@@ -293,4 +377,21 @@ model UserSongHistory {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   deletedAt      DateTime?
+}model UserSubscription {
+  id              Int       @id @default(autoincrement())
+  userId          Int
+  subscriptionPlanId Int
+  startDate       DateTime  @default(now())
+  endDate         DateTime
+  isActive        Boolean   @default(true)
+  paymentStatus   String    // e.g., "PAID", "PENDING", "FAILED"
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  user            User             @relation(fields: [userId], references: [id])
+  subscriptionPlan SubscriptionPlan @relation(fields: [subscriptionPlanId], references: [id])
+  payments        Payment[]         // Added this to match the `Payment` model
+
+  @@index([userId, subscriptionPlanId])
 }

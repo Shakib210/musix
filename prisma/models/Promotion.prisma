@@ -1,0 +1,9 @@
+model Promotion {
+  id         Int      @id @default(autoincrement())
+  code       String   @unique
+  discount   Float    // Percentage or flat discount
+  startDate  DateTime
+  endDate    DateTime
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+}
