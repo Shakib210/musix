@@ -4,6 +4,7 @@ import Joi from 'joi';
 const createUserSchema = Joi.object({
     userAccount: Joi.string().required(),
     email: Joi.string().email().required(),
+    password: Joi.string().required().min(8).max(16),
     firstName: Joi.string().required(),
     lastName: Joi.string().required(),
     gender: Joi.string().optional(),

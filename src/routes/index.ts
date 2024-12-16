@@ -1,8 +1,10 @@
-import { Application } from 'express';
-import productRoutes from './userRoutes'; 
+import { Application } from "express";
+import userRoutes from "./userRoutes";
+import loginRoutes from "./loginRoutes";
 
 const configureAllRoutes = (app: Application) => {
-    productRoutes(app)
-}
+  userRoutes(app);
+  loginRoutes(app);
+};
 
 export default configureAllRoutes;

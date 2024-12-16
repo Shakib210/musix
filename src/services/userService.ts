@@ -21,9 +21,26 @@ export const createUserService = async (payload: any) => {
 };
 
 export const getUsersService = async () => {
-  const products = await prisma.user.findMany({
+  const users = await prisma.user.findMany({
     where: { deletedAt: null }, // Avoid soft deleted entries
+    select: {
+      firstName: true,
+      lastName: true,
+      dateOfBirth: true,
+      email: true,
+      gender: true,
+      phoneNumber: true,
+      userAccount: true,
+    }
   });
 
-  return products;
+  return users;
+};
+
+export const getUsersByEmailService = async (email: string) => {
+  const user = await prisma.user.findFirst({
+    where: { OR: [{ userAccount: email }, { email: email }], deletedAt: null },
+  });
+
+  return user;
 };
