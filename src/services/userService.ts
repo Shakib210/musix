@@ -31,7 +31,7 @@ export const getUsersService = async () => {
       gender: true,
       phoneNumber: true,
       userAccount: true,
-    }
+    },
   });
 
   return users;
@@ -44,3 +44,38 @@ export const getUsersByEmailService = async (email: string) => {
 
   return user;
 };
+
+export async function getUserPermissions(userId: number): Promise<string[]> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      userRoles: {
+        include: {
+          role: {
+            include: {
+              rolePermissions: {
+                include: {
+                  permission: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  const permissions = new Set<string>();
+
+  user.userRoles.forEach((userRole) => {
+    userRole.role.rolePermissions.forEach((rolePermission) => {
+      permissions.add(rolePermission.permission.name);
+    });
+  });
+
+  return Array.from(permissions);
+}
