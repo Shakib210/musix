@@ -3,21 +3,22 @@ import validators from "../validation/index";
 import { handleValidations } from "../middlewares/handleValidation";
 import { Application } from "express";
 import { createUser, getAllUsers } from "../controllers/userController";
-import { authenticateToken } from "../middlewares/authenticate";
-import { authorizePermission } from "../middlewares/authorize";
 import { PERMISSIONS } from "../config/permissions";
+import { withAuthAndPermission } from "../middlewares/withAuthAndPermission";
 
 const router = express.Router();
 
 router
-  .route('/')
-  .get(getAllUsers)
+  .route("/")
+  .get(
+    ...withAuthAndPermission(PERMISSIONS.ALL_USER),
+    getAllUsers
+  )
   .post(
     handleValidations((data: any) =>
       validators.signupValidation(data, false)
     ) as any,
-    authenticateToken,
-    authorizePermission(PERMISSIONS.CREATE_PRODUCT),
+    ...withAuthAndPermission(PERMISSIONS.CREATE_USER),
     createUser
   );
 
