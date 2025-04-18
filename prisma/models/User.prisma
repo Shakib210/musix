@@ -1,8 +1,8 @@
-// User model
 model User {
-  id                     Int                     @id @default(autoincrement())
-  userAccount            String                  @unique
-  email                  String                  @unique
+  id                     Int       @id @default(autoincrement())
+  userAccount            String    @unique
+  email                  String    @unique
+  password               String
   firstName              String
   lastName               String
   gender                 String?
@@ -10,18 +10,22 @@ model User {
   enablePushNotification Boolean?
   verificationCode       BigInt?
   phoneNumber            String?
-  dateOfSignup           DateTime                @default(now())
+  dateOfSignup           DateTime  @default(now())
   premiumUser            Boolean?
   tempPw                 String?
-  createdAt              DateTime                @default(now())
-  updatedAt              DateTime                @updatedAt
-  deletedAt              DateTime?               // Soft delete
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  deletedAt              DateTime? // Soft delete
 
   // Relations
-  songHistories          UserSongHistory[]
-  userPlaylists          UserPlaylist[]
-  userRoles              UserRole[]
-  likesFavorites         UserLikesFavorites[]
+  songHistories     UserSongHistory[]
+  userPlaylists     UserPlaylist[]
+  userRoles         UserRole[]
+  likesFavorites    UserLikesFavorites[]
+  userSubscriptions UserSubscription[]
+  tokens            RefreshToken[]
+  logs              Log[]
+  reviews           Review[]
 
   @@index([email], map: "idx_user_email") // Index for faster lookup
 }

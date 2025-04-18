@@ -1,10 +1,10 @@
-// src/routes/index.ts
-import { Router } from 'express';
-import userRoutes from '@routes/userRoutes'; 
+import { Application } from "express";
+import userRoutes from "./userRoutes";
+import loginRoutes from "./loginRoutes";
 
-const router = Router();
+const configureAllRoutes = (app: Application) => {
+  userRoutes(app);
+  loginRoutes(app);
+};
 
-// Mount user routes
-router.use('/users', userRoutes);
-
-export default router;
+export default configureAllRoutes;

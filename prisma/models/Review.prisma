@@ -1,0 +1,13 @@
+model Review {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  entityType String   // e.g., "SONG", "ALBUM", "ARTIST"
+  entityId   Int      // ID of the related entity
+  rating     Int      // 1 to 5
+  comment    String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  user       User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

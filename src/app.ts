@@ -1,10 +1,10 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-import routes from './routes'; // Ensure the import is correct
-import errorHandler from '@middlewares/errorHandler'; // Import custom error handler
-import { connectDB } from '@config/db';
+import express, { Application, Request, Response } from "express";
+import bodyParser from "body-parser";
+import errorHandler from "./middlewares/errorHandler"; // Import custom error handler
+import { connectDB } from "./config/db";
+import configureAllRoutes from "./routes/index.js";
 
-const app = express();
+const app: Application = express(); // Ensure `app` is explicitly typed as `Application`
 
 // Middleware to parse JSON requests
 app.use(bodyParser.json());
@@ -14,9 +14,9 @@ app.use(express.json()); // You can keep this if needed
 connectDB();
 
 // Use the routes
-app.use('/api', routes); // Mount all routes under '/api'
+configureAllRoutes(app);
 
-// Custom error handler middleware
+// Error handler middleware (must be after all routes)
 app.use(errorHandler as any);
 
 export default app;

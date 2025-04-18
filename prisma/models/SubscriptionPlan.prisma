@@ -1,0 +1,14 @@
+model SubscriptionPlan {
+  id             Int       @id @default(autoincrement())
+  name           String    @unique
+  description    String?
+  price          Float     // Monthly subscription price
+  durationMonths Int       // Duration in months
+  isRecurring    Boolean   @default(true) // Recurring or one-time
+  trialDays      Int?      // Optional trial period
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relations
+  userSubscriptions UserSubscription[]
+}
