@@ -9,21 +9,16 @@ import { withAuthAndPermission } from "../middlewares/withAuthAndPermission";
 const router = express.Router();
 
 router
-  .route("/")
-  .get(
-    ...withAuthAndPermission(PERMISSIONS.ALL_USER),
-    getAllUsers
-  )
-  .post(
-    handleValidations((data: any) =>
-      validators.signupValidation(data, false)
-    ) as any,
-    ...withAuthAndPermission(PERMISSIONS.CREATE_USER),
-    createUser
-  );
+	.route("/")
+	.get(...withAuthAndPermission(PERMISSIONS.ALL_USER), getAllUsers)
+	.post(
+		handleValidations((data: any) => validators.signupValidation(data, false)) as any,
+		...withAuthAndPermission(PERMISSIONS.CREATE_USER),
+		createUser
+	);
 
 const configure = (app: Application) => {
-  app.use("/api/user", router);
+	app.use("/api/user", router);
 };
 
 export default configure;
