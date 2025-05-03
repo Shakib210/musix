@@ -376,9 +376,10 @@ model UserSongHistory {
   user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  updatedAt      DateTime  @updatedAt 
   deletedAt      DateTime?
-}model UserSubscription {
+}
+model UserSubscription {
   id              Int       @id @default(autoincrement())
   userId          Int
   subscriptionPlanId Int
