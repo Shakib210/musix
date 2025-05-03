@@ -1,4 +1,4 @@
-import { getUsersByEmailService } from "../services/userService";
+import { getUserByEmailService } from "../services/userService";
 import { Request, Response } from "express";
 import asyncHandler from "../utils/async";
 import { generateToken } from "../utils/helper";
@@ -9,7 +9,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 
 	try {
 		// Find user by email
-		const user = await getUsersByEmailService(email);
+		const user = await getUserByEmailService(email);
 
 		if (!user) {
 			return res.status(401).json({ message: "Invalid email or password" });
